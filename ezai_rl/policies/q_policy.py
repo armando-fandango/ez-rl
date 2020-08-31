@@ -1,11 +1,12 @@
 from . import BasePolicy
+import gym
 
 import numpy as np
 
 class QBasePolicy(BasePolicy):
     def __init__(self,
+                 action_space,
                  nS,
-                 nA,
                  discount_rate=0.9,
                  learning_rate=0.8,
                  explore_rate_max=0.9,
@@ -23,10 +24,9 @@ class QBasePolicy(BasePolicy):
             self.nS = np.array(nS)
         else:
             self.nS = nS
-        if not isinstance(nA, np.ndarray):
-            self.nA = np.array(nA)
-        else:
-            self.nA = nA
+
+        if not isinstance(action_space,gym.spaces.MultiDiscrete):
+            self.nA = np.array(action_space.n)
 
     def max_er(self, er_max=None):
         if er_max is not None:
@@ -46,19 +46,18 @@ class QBasePolicy(BasePolicy):
 
 class QTablePolicy(QBasePolicy):
     def __init__(self,
+                 action_space,
                  nS,
-                 nA,
                  discount_rate=0.9,
                  learning_rate=0.8,
                  explore_rate_max=0.9,
                  explore_rate_min=0.01,
                  explore_rate_decay=0.005):
-        super().__init__(nS, nA, discount_rate, learning_rate,
+        super().__init__(action_space, nS, discount_rate, learning_rate,
                          explore_rate_max, explore_rate_min,
                          explore_rate_decay)
 
         self.__name__ = 'Q_Table'
-
         # create a q-table of shape (S X A)
         # representing S X A -> R
         self.nQ = np.append(self.nS, self.nA)
@@ -112,14 +111,14 @@ import torch
 
 class DQNPolicy(QBasePolicy):
     def __init__(self,
+                 action_space,
                  nS,
-                 nA,
                  discount_rate=0.9,
                  learning_rate=0.8,
                  explore_rate_max=0.9,
                  explore_rate_min=0.01,
                  explore_rate_decay=0.005):
-        super().__init__(nS, nA, discount_rate, learning_rate,
+        super().__init__(action_space, nS, discount_rate, learning_rate,
                          explore_rate_max, explore_rate_min,
                          explore_rate_decay)
         self.__name__ = 'DQN'
