@@ -6,3 +6,6 @@ class BasePolicy():
 
     def update(self, *args, **kwargs):
         pass
+
+    def decay_er(self, *args, **kwargs):
+        pass
